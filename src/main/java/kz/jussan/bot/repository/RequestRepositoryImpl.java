@@ -50,6 +50,9 @@ public class RequestRepositoryImpl implements RequestRepository {
 
     @Override
     public List<Request> findActiveRequestByType(Request.Type type) {
-        return null;
+        return requests.stream()
+                .filter(request1 -> Objects.equals(request1.getType(), type)
+                        && request1.getStatus().equals(Request.Status.AWAIT))
+                .collect(Collectors.toList());
     }
 }

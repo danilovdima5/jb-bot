@@ -1,11 +1,6 @@
 package kz.jussan.bot.model;
 
 import lombok.Data;
-import org.hibernate.annotations.Entity;
-import org.hibernate.annotations.Type;
-import org.hibernate.procedure.spi.ParameterRegistrationImplementor;
-
-import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
