@@ -9,6 +9,7 @@ public class Main {
         try {
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
             botsApi.registerBot(new JBot());
+            Thread climateScheduler = new Thread();
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }

@@ -1,19 +1,20 @@
 package kz.jussan.bot.service;
 
+import kz.jussan.bot.model.ClimateControlAction;
 import kz.jussan.bot.model.ClimateControlRequest;
 import kz.jussan.bot.model.Request;
 import kz.jussan.bot.repository.RequestRepository;
 import kz.jussan.bot.repository.RequestRepositoryImpl;
 
+import java.time.LocalDateTime;
 import java.util.*;
-
-import static java.util.Objects.nonNull;
-import static jdk.dynalink.linker.support.Guards.isNull;
+import java.util.stream.Collectors;
 
 public class ClimateControlServiceImpl implements ClimateControlService{
 
     private static final Map<String, List<Request>> REQUESTS = new HashMap<>();
     private final RequestRepository requestRepository = new RequestRepositoryImpl();
+    private static final Integer REQUEST_PROCESS_DELAY_MINUTES = 5;
 
     @Override
     public String registerRequest(Request request) {
@@ -23,15 +24,15 @@ public class ClimateControlServiceImpl implements ClimateControlService{
                 || !(request.getPayload() instanceof ClimateControlRequest)) {
             return "Invalid request";
         }
-        Long requestId = requestRepository.saveRequest(request);
-        if (Objects.isNull(requestId)) {
+        Request result = requestRepository.saveRequest(request);
+        if (Objects.isNull(result)) {
             return "Couldn't save request";
         }
-        ClimateControlRequest payload = (ClimateControlRequest) request.getPayload();
+        ClimateControlRequest payload = (ClimateControlRequest) result.getPayload();
         if (!REQUESTS.containsKey(payload.getZone())) {
-            REQUESTS.put(payload.getZone(), List.of(request));
+            REQUESTS.put(payload.getZone(), List.of(result));
         } else {
-            REQUESTS.get(payload.getZone()).add(request);
+            REQUESTS.get(payload.getZone()).add(result);
         }
         return "Successfully registered request";
     }
@@ -51,8 +52,26 @@ public class ClimateControlServiceImpl implements ClimateControlService{
             return "Request with this status can't be canceled";
         }
         request.setStatus(Request.Status.DECLINED);
-        Long id = requestRepository.saveRequest(request);
+        Request result = requestRepository.saveRequest(request);
 
-        return Objects.nonNull(id) ? "ok" : "error";
+        return Objects.nonNull(result) ? "ok" : "error";
+    }
+
+    @Override
+    public List<ClimateControlRequest> checkActiveRequests() {
+  /*      REQUESTS.entrySet().stream()
+                .filter(stringListEntry -> stringListEntry.getValue().stream()
+                        .filter(request -> LocalDateTime.now().minusMinutes(REQUEST_PROCESS_DELAY_MINUTES)
+                                .isAfter(request.getReceived()))
+                        .findAny().isPresent();*/
+        return null;
+    }
+
+    private ClimateControlRequest makeDecision(List<Request> requests) {
+        Map<ClimateControlAction, Long> requestedActions = requests.stream()
+                .filter(request -> Request.Type.CLIMATE_CONTROL.equals(request.getType()))
+                .map(request -> (ClimateControlRequest) request.getPayload())
+                .collect(Collectors.groupingBy(ClimateControlRequest::getAction, Collectors.counting()));
+        return null;
     }
 }

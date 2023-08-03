@@ -14,7 +14,7 @@ public class RequestRepositoryImpl implements RequestRepository {
     private static Long COUNTER = 0L;
 
     @Override
-    public Long saveRequest(Request request) {
+    public Request saveRequest(Request request) {
         if (!request.isValid()) {
             System.out.println("Request is invalid!");
             return null;
@@ -32,7 +32,7 @@ public class RequestRepositoryImpl implements RequestRepository {
         request.setReceived(LocalDateTime.now());
         request.setStatus(Request.Status.AWAIT);
         requests.add(request);
-        return request.getId();
+        return request;
     }
 
     @Override

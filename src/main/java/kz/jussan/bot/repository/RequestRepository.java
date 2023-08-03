@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface RequestRepository {
 
-    Long saveRequest(Request request);
+    Request saveRequest(Request request);
     List<Request> findActiveRequestsByUserId(String userId);
     Long updateRequest(Request request);
     List<Request> findActiveRequestByType(Request.Type type);
