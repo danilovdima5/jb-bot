@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class RequestRepositoryImpl implements RequestRepository {
 
-    private final Set<Request> requests = new HashSet<>();
+    private static final Set<Request> requests = new HashSet<>();
     private static Long COUNTER = 0L;
 
     @Override
