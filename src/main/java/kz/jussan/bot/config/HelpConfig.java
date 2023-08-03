@@ -12,7 +12,7 @@ public class HelpConfig {
 
     public static void loadConfig(String configFilePath) {
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> commandsMap;
+        HashMap<String,String> commandsMap;
         try {
             commandsMap = mapper.readValue(new File(configFilePath), HashMap.class);
         } catch (IOException e) {

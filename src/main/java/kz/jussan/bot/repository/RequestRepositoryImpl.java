@@ -20,11 +20,9 @@ public class RequestRepositoryImpl implements RequestRepository {
             return null;
         }
         if (requests.stream()
-                .filter(request1 -> Objects.equals(request1.getUserId(), request.getUserId())
+                .anyMatch(request1 -> Objects.equals(request1.getUserId(), request.getUserId())
                         && Objects.equals(request1.getType(), request.getType())
-                        && request1.getStatus().equals(Request.Status.AWAIT))
-                .findAny()
-                .isPresent()) {
+                        && request1.getStatus().equals(Request.Status.AWAIT))) {
             System.out.println("ActiveRequest must be completed!");
             return null;
         }

@@ -1,8 +1,10 @@
 package kz.jussan.bot;
 
+import kz.jussan.bot.config.HelpConfig;
 import kz.jussan.bot.config.TelegramConfig;
 import kz.jussan.bot.model.Location;
 import kz.jussan.bot.model.Temperature;
+import kz.jussan.bot.repository.HelpRequest;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -21,6 +23,7 @@ public class JBot extends TelegramLongPollingBot {
     public static List<Location> locations;
     public static List<Temperature> temperatures;
 
+
     static {
         locations = new ArrayList<>();
         locations.add(Location.A1);
@@ -32,6 +35,13 @@ public class JBot extends TelegramLongPollingBot {
         temperatures.add(Temperature.WARM);
     }
 
+    public JBot(String token) {
+        super(token);
+    }
+    //TODO запилить меню в отдельном пакете
+    //TODO хасинхронить его с хелп оно и будет меню
+    //TODO рефакторинг!!
+
     public String getBotUsername() {
         return TelegramConfig.NAME;
     }
@@ -40,25 +50,15 @@ public class JBot extends TelegramLongPollingBot {
         super.onRegister();
     }
 
-    @Override
-    public String getBotToken() {
-        return TelegramConfig.TOKEN;
-    }
-
     public void onUpdateReceived(Update update) {
-        if(update.hasCallbackQuery()){
-            String query= update.getCallbackQuery().getData();
+        if (update.hasCallbackQuery()) {
+            String query = update.getCallbackQuery().getData();
             long chatId = update.getCallbackQuery().getMessage().getChatId();
             System.out.println(chatId + ": " + query);
             switch (query) {
-                case "COLD":
-                    lowTemperatureCommandReceived(chatId);
-                    break;
-                case "WARM":
-                    highTemperatureCommandReceived(chatId);
-                    break;
-                default:
-                    sendMessage(chatId, "Idk what is it", null);
+                case "COLD" -> lowTemperatureCommandReceived(chatId);
+                case "WARM" -> highTemperatureCommandReceived(chatId);
+                default -> sendMessage(chatId, "Idk what is it", null);
             }
         }
 
@@ -68,31 +68,44 @@ public class JBot extends TelegramLongPollingBot {
             System.out.println(chatId + ": " + message);
 
             switch (message) {
-                case "/start":
-                    startCommandReceived(chatId);
-                    break;
-                default:
-                    sendMessage(chatId, "Idk what is it", null);
+                case "/start" -> startCommandReceived(chatId);
+                case "/clim" -> showClimateMenu(chatId);
+                case "/help" -> showMainMenu(chatId);
+                default -> sendMessage(chatId, "Idk what is it", null);
             }
         }
     }
 
     private void startCommandReceived(long chatId) {
+        showMainMenu(chatId);
+    }
+
+    private void showMainMenu(long chatId) {
         String answer = "Hey hey, Welcome \n" +
                 "We glad to see you \n" +
-                "If you want to change temperature in office click buttons";
+                "My functions:";
+        answer = answer + "\n" + HelpConfig.getHelpMsg();
+        SendMessage sm = SendMessage.builder().chatId(chatId).text(answer).build();
+        try {
+            execute(sm);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    private void showClimateMenu(long chatId) {
+        String answer = "If you want to change temperature in office click buttons";
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
-        temperatures.stream().forEach(loc -> {
+        for (Temperature loc : temperatures) {
             InlineKeyboardButton button = new InlineKeyboardButton();
             button.setText(loc.description());
             button.setCallbackData(loc.name());
             row.add(button);
-        });
+        }
         keyboard.add(row);
-
         sendMessage(chatId, answer, keyboard);
+
     }
 
     private void lowTemperatureCommandReceived(long chatId) {
@@ -100,14 +113,13 @@ public class JBot extends TelegramLongPollingBot {
 
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
-        locations.stream().forEach(loc -> {
+        locations.forEach(loc -> {
             InlineKeyboardButton button = new InlineKeyboardButton();
             button.setText(loc.description());
             button.setCallbackData(loc.name());
             row.add(button);
         });
         keyboard.add(row);
-
         sendMessage(chatId, answer, keyboard);
         sendPhoto(chatId);
     }
@@ -117,7 +129,7 @@ public class JBot extends TelegramLongPollingBot {
 
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
-        locations.stream().forEach(loc -> {
+        locations.forEach(loc -> {
             InlineKeyboardButton button = new InlineKeyboardButton();
             button.setText(loc.description());
             button.setCallbackData(loc.name());

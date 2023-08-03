@@ -1,5 +1,7 @@
 package kz.jussan.bot.whatsapp;
 
+import kz.jussan.bot.config.WhatsappConfig;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -9,15 +11,12 @@ import java.net.http.HttpResponse;
 
 public class App {
 
-    private final String token = "EAAMScZB7gPSkBO1Wm2eYE8SZBc2IFn8EQQWqX88aDRWDYJshTR64c3Rv80PwkX2YUAvcyk0VsUE6wgVkJRl7kYXNUrNID0EZBZCgT2lws6MWN4lqZAZAvbxKMiPc8infKnZCgsG0EmG9E8RuALvJLi7vl0qMZAkBmvOgEKvxrgHaWWpTjl0iXM07cPzWlmyzGuZB417wEyWiKIqTWPMUZD";
 
-    private final String appId = "112727178578230";
-    public static void main( String[] args )
-    {
+    public static void main(String[] args) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI("https://graph.facebook.com/v13.0/112727178578230/messages"))
-                    .header("Authorization", "Bearer EAAMScZB7gPSkBO1Wm2eYE8SZBc2IFn8EQQWqX88aDRWDYJshTR64c3Rv80PwkX2YUAvcyk0VsUE6wgVkJRl7kYXNUrNID0EZBZCgT2lws6MWN4lqZAZAvbxKMiPc8infKnZCgsG0EmG9E8RuALvJLi7vl0qMZAkBmvOgEKvxrgHaWWpTjl0iXM07cPzWlmyzGuZB417wEyWiKIqTWPMUZD")
+                    .uri(new URI(WhatsappConfig.MESSAGE_URI))
+                    .header("Authorization", "Bearer " + WhatsappConfig.TOKEN)
                     .header("Content-Type", "application/json")
                     //TODO сделать шаблон
                     .POST(HttpRequest.BodyPublishers.ofString("{ \"messaging_product\": \"whatsapp\", \"recipient_type\": \"individual\", \"to\": \"787778080085\", \"type\": \"template\", \"template\": { \"name\": \"hello_world\", \"language\": { \"code\": \"en_US\" } } }"))
