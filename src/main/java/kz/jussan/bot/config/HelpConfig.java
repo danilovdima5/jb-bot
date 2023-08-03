@@ -21,8 +21,10 @@ public class HelpConfig {
 
         StringBuilder textBuilder = new StringBuilder();
         for (Map.Entry<String, String> pair : commandsMap.entrySet()) {
-            String url = pair.getKey() + " - " + pair.getValue();
-            textBuilder.append(url);
+            textBuilder.append(pair.getKey());
+            textBuilder.append(" - ");
+            textBuilder.append(pair.getValue());
+            textBuilder.append("\n");
         }
         helpText = textBuilder.toString();
     }

@@ -5,13 +5,6 @@ import lombok.Data;
 @Data
 public class ClimateControlRequest implements Payload {
     private String zone;
-    private Action action;
+    private ClimateControlAction action;
 
-
-    public enum Action {
-        WARM,
-        COLD,
-        HIGH,
-        LOW
-    }
 }

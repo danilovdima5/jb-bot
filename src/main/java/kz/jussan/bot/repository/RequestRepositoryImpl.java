@@ -65,4 +65,9 @@ public class RequestRepositoryImpl implements RequestRepository {
                         && request1.getStatus().equals(Request.Status.AWAIT))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Optional<Request> findById(Long requestId) {
+        return requests.stream().filter(request -> request.getId().equals(requestId)).findFirst();
+    }
 }
