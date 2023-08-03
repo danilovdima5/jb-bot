@@ -45,7 +45,17 @@ public class RequestRepositoryImpl implements RequestRepository {
 
     @Override
     public Long updateRequest(Request request) {
-        return null;
+        if (!request.isValid()) {
+            System.out.println("Request is invalid!");
+            return null;
+        }
+        if (!requests.contains(request)) {
+            System.out.println("Request with this id doesn't exist");
+            return null;
+        }
+        requests.remove(request);
+        requests.add(request);
+        return request.getId();
     }
 
     @Override
