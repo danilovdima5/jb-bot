@@ -40,6 +40,7 @@ public class Request {
 
     public enum Status {
         AWAIT,
+        PROCESSING,
         DECLINED,
         FINISHED
     }
