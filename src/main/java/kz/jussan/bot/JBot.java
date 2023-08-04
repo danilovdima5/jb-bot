@@ -76,7 +76,7 @@ public class JBot extends TelegramLongPollingBot {
                 case "/help" -> showMainMenu(chatId);
                 default -> {
                     String resp = gpt.haughtyBot(message);
-                    sendMessage(chatId,resp);
+                    sendMessage(chatId, resp);
                 }
             }
         }
@@ -176,11 +176,11 @@ public class JBot extends TelegramLongPollingBot {
     }
 
     private void sendPhoto(long chatId) {
-        String filePath = Objects.requireNonNull(getClass().getClassLoader().getResource("map.jpg")).getPath();
-
-        SendPhoto message = new SendPhoto(String.valueOf(chatId),
-                new InputFile(new File(filePath)));
+        String filePath = System.getProperty("user.dir") + "/map.jpg";
         try {
+            SendPhoto message = new SendPhoto(String.valueOf(chatId),
+                    new InputFile(new File(filePath)));
+
             execute(message);
         } catch (Exception e) {
             e.printStackTrace();
