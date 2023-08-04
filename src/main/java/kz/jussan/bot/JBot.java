@@ -5,6 +5,7 @@ import kz.jussan.bot.config.TelegramConfig;
 import kz.jussan.bot.model.Location;
 import kz.jussan.bot.model.Temperature;
 import kz.jussan.bot.repository.HelpRequest;
+import kz.jussan.bot.service.GptService;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -23,6 +24,7 @@ public class JBot extends TelegramLongPollingBot {
     public static List<Location> locations;
     public static List<Temperature> temperatures;
 
+    private final GptService gpt;
 
     static {
         locations = new ArrayList<>();
@@ -37,6 +39,7 @@ public class JBot extends TelegramLongPollingBot {
 
     public JBot(String token) {
         super(token);
+        gpt = new GptService();
     }
     //TODO запилить меню в отдельном пакете
     //TODO хасинхронить его с хелп оно и будет меню
@@ -71,7 +74,10 @@ public class JBot extends TelegramLongPollingBot {
                 case "/start" -> startCommandReceived(chatId);
                 case "/clim" -> showClimateMenu(chatId);
                 case "/help" -> showMainMenu(chatId);
-                default -> sendMessage(chatId, "Idk what is it", null);
+                default -> {
+                    String resp = gpt.haughtyBot(message);
+                    sendMessage(chatId,resp);
+                }
             }
         }
     }
@@ -81,9 +87,7 @@ public class JBot extends TelegramLongPollingBot {
     }
 
     private void showMainMenu(long chatId) {
-        String answer = "Hey hey, Welcome \n" +
-                "We glad to see you \n" +
-                "My functions:";
+        String answer = "Привет дружище, я бот JB вот мои функции:";
         answer = answer + "\n" + HelpConfig.getHelpMsg();
         SendMessage sm = SendMessage.builder().chatId(chatId).text(answer).build();
         try {
@@ -143,6 +147,15 @@ public class JBot extends TelegramLongPollingBot {
 
     public void onUpdatesReceived(List<Update> updates) {
         super.onUpdatesReceived(updates);
+    }
+
+    private void sendMessage(long chatId, String textTosSend) {
+        SendMessage message = new SendMessage(String.valueOf(chatId), textTosSend);
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
     }
 
     private void sendMessage(long chatId, String textTosSend, List<List<InlineKeyboardButton>> buttons) {
